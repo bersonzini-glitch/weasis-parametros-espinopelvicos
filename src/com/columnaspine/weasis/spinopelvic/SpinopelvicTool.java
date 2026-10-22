@@ -127,6 +127,8 @@ public class SpinopelvicTool extends PluginTool {
   private final JLabel scale = new JLabel();
   private final JButton skip = new JButton("Saltar");
   private final JButton unassign = new JButton("Borrar trazo");
+  private final JButton update = new JButton();
+  private Updater.Release release;
   private boolean updatingList;
   private boolean wasShowing;
   private long rearmUntil;
@@ -143,6 +145,8 @@ public class SpinopelvicTool extends PluginTool {
     setLayout(new BorderLayout());
     add(buildPanel(), BorderLayout.NORTH);
     new Timer(300, e -> tick()).start();
+    Updater.latest(bundleVersion())
+        .thenAccept(rel -> { if (rel != null) javax.swing.SwingUtilities.invokeLater(() -> showUpdate(rel)); });
   }
 
   private Step step(int i) {
@@ -164,6 +168,12 @@ public class SpinopelvicTool extends PluginTool {
     JPanel p = new JPanel();
     p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
     p.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+
+    // Hidden until Updater finds a newer release.
+    update.setVisible(false);
+    update.setFont(update.getFont().deriveFont(Font.BOLD));
+    update.addActionListener(e -> installUpdate());
+    p.add(left(row(update)));
 
     instruction.setFont(instruction.getFont().deriveFont(Font.BOLD));
     instruction.setForeground(PLUMB);
@@ -245,10 +255,75 @@ public class SpinopelvicTool extends PluginTool {
 
   private static final String AUTHOR_URL = "https://www.columna-spine.com/";
 
-  private void showAbout() {
-    String version = "";
+  private static String bundleVersion() {
     var bundle = org.osgi.framework.FrameworkUtil.getBundle(SpinopelvicTool.class);
-    if (bundle != null) version = " " + bundle.getVersion();
+    return bundle == null ? "0" : bundle.getVersion().toString();
+  }
+
+  private void showUpdate(Updater.Release rel) {
+    release = rel;
+    update.setText("Actualizar a la versión " + rel.version() + "…");
+    update.setEnabled(true);
+    update.setVisible(true);
+    revalidate();
+  }
+
+  private void installUpdate() {
+    Updater.Release rel = release;
+    String notes = rel.notes().replaceAll("[*`#]", "").strip();
+    if (notes.length() > 600) notes = notes.substring(0, 600) + "…";
+    // An HTML label with a fixed width wraps and sizes itself; a wrapping JTextArea gets clipped.
+    String body = (notes.isEmpty() ? "" : notes + "\n\n") + "Se descarga el plugin nuevo. Después cerrá y volvé a abrir Weasis.";
+    JLabel text = new JLabel(
+        "<html><body style='width:340px'><b>Hay una versión nueva: " + rel.version() + "</b> (tenés la " + bundleVersion() + ").<br><br>"
+            + body.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\n", "<br>") + "</body></html>");
+    Object[] options = {"Descargar e instalar", "Ahora no"};
+    if (JOptionPane.showOptionDialog(this, text, "Actualización disponible", JOptionPane.DEFAULT_OPTION,
+            JOptionPane.INFORMATION_MESSAGE, null, options, options[0]) != 0) {
+      return;
+    }
+    update.setEnabled(false);
+    update.setText("Descargando la actualización…");
+    var bundle = org.osgi.framework.FrameworkUtil.getBundle(SpinopelvicTool.class);
+    String location = bundle == null ? "" : bundle.getLocation();
+    new Thread(() -> {
+      Exception error = null;
+      try {
+        Updater.install(rel, location);
+      } catch (Exception ex) {
+        error = ex;
+      }
+      Exception failed = error;
+      javax.swing.SwingUtilities.invokeLater(() -> {
+        if (failed == null) {
+          update.setText("Versión " + rel.version() + " instalada: reiniciá Weasis");
+          JOptionPane.showMessageDialog(this,
+              "Listo. Cerrá Weasis y volvé a abrirlo para usar la versión " + rel.version() + ".",
+              "Actualización instalada", JOptionPane.INFORMATION_MESSAGE);
+          return;
+        }
+        showUpdate(rel);
+        Object[] opts = {"Abrir la página", "Cerrar"};
+        if (JOptionPane.showOptionDialog(this,
+                "No se pudo instalar la actualización (" + failed.getMessage() + ").\n"
+                    + "Podés descargarla a mano desde la página del plugin.",
+                "Actualización", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, opts, opts[0]) == 0) {
+          browse(Updater.RELEASES_PAGE);
+        }
+      });
+    }, "espinopelvico-update").start();
+  }
+
+  private void browse(String url) {
+    try {
+      java.awt.Desktop.getDesktop().browse(new java.net.URI(url));
+    } catch (Exception ex) {
+      JOptionPane.showMessageDialog(this, "No pude abrir el navegador. La dirección es " + url);
+    }
+  }
+
+  private void showAbout() {
+    String version = " " + bundleVersion();
     String text =
         "<html><b>Parámetros espinopélvicos" + version + "</b><br><br>"
             + "Plugin para Weasis que mide PI, PT, SS, LL, PI−LL, cifosis torácica,<br>"
@@ -262,13 +337,7 @@ public class SpinopelvicTool extends PluginTool {
         JOptionPane.showOptionDialog(
             this, text, "Acerca de", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
             null, options, options[0]);
-    if (choice == 0) {
-      try {
-        java.awt.Desktop.getDesktop().browse(new java.net.URI(AUTHOR_URL));
-      } catch (Exception ex) {
-        JOptionPane.showMessageDialog(this, "No pude abrir el navegador. La dirección es " + AUTHOR_URL);
-      }
-    }
+    if (choice == 0) browse(AUTHOR_URL);
   }
 
   private static JComponent row(JComponent... items) {

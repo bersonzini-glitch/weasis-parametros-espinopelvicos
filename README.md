@@ -65,6 +65,8 @@ Convenciones: LL y TK positivos significan lordosis y cifosis. SVA y PT positivo
 5. **Borrar trazo** borra el trazo del paso elegido para volver a hacerlo. **Reiniciar** borra todos los trazos de la medición y empieza de nuevo.
 6. **Copiar resultados** copia el informe al portapapeles. **Acerca de…** muestra la versión y el autor, y abre columna-spine.com.
 
+**Actualizaciones.** Desde la versión 1.1.0, al abrir Weasis el plugin consulta si hay una versión nueva. Si la hay, arriba del panel aparece **Actualizar a la versión…**: descarga el plugin nuevo y, después de cerrar y volver a abrir Weasis, queda en uso. Sin conexión a internet el botón simplemente no aparece.
+
 Los trazos son mediciones comunes de Weasis: se guardan y se exportan como cualquier otra. Las líneas auxiliares no se guardan.
 
 **SVA en mm.** Si la imagen trae espaciado de píxel DICOM, el SVA sale en mm. Si no, sale en píxeles hasta que calibres con la herramienta de calibración de Weasis, sobre una línea de longitud conocida. La magnificación radiográfica puede alterar el SVA. Los ángulos no dependen de la escala.
@@ -115,6 +117,8 @@ Open a standing lateral whole-spine radiograph and the **Espinopélvico** tab on
 
 Each finished graphic is assigned to the waiting step, and values update live as graphics are edited. The landmarks are ordinary Weasis measurements, so they are saved with the image.
 
+**Updates.** From 1.1.0 on, the panel checks the latest GitHub release when Weasis starts. If it is newer, an **Actualizar a la versión…** button downloads the new bundle next to the current one and points `espinopelvico.json` at it; it is used from the next Weasis start.
+
 ### How the install works
 
 The bundle lives in `~/.weasis/plugins` with an extension config (`espinopelvico.json`) that adds it to Weasis' `felix.auto.start` list. The Java-standard **`JAVA_TOOL_OPTIONS`** variable passes `-Dfelix.extended.config.properties` to Weasis' launcher. On Mac it is set by a LaunchAgent at login; on Windows it is a user environment variable. Weasis itself is never modified.
@@ -127,6 +131,7 @@ The bundle lives in `~/.weasis/plugins` with an extension config (`espinopelvico
 |---|---|
 | `src/.../SpinopelvicToolFactory.java` | OSGi component (`OSGI-INF/spinopelvic-tool.xml`) registering the panel in the DICOM 2D viewer |
 | `src/.../SpinopelvicTool.java` | Panel, step flow, tool selection, assignment of graphics, helper lines |
+| `src/.../Updater.java` | Checks the latest GitHub release and installs its bundle in place |
 | `src/.../Geometry.java` | Geometry (no Weasis dependency) |
 | `test/GeometryTest.java` | Synthetic tests: facing both ways, lines drawn in either direction |
 
