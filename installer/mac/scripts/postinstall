@@ -1,0 +1,67 @@
+#!/bin/bash
+# Runs as root once the package is installed. Sets the plugin up for the user logged in at the
+# console: copies the bundle to ~/.weasis/plugins, writes the Weasis extension config, and makes
+# JAVA_TOOL_OPTIONS point Weasis at it on every login (LaunchAgent) and right now (launchctl setenv).
+set -euo pipefail
+
+SRC="/Library/Application Support/WeasisEspinopelvico"
+USER_NAME=$(stat -f%Su /dev/console)
+[[ -n "$USER_NAME" && "$USER_NAME" != "root" ]] || exit 0
+USER_HOME=$(dscl . -read "/Users/$USER_NAME" NFSHomeDirectory | awk '{print $2}')
+USER_ID=$(id -u "$USER_NAME")
+JAR=$(ls "$SRC"/weasis-espinopelvico-*.jar | head -1)
+DEST="$USER_HOME/.weasis/plugins"
+AGENT="$USER_HOME/Library/LaunchAgents/com.columnaspine.weasis-espinopelvico.plist"
+
+as_user() { launchctl asuser "$USER_ID" sudo -u "$USER_NAME" "$@"; }
+
+as_user mkdir -p "$DEST" "$USER_HOME/Library/LaunchAgents"
+rm -f "$DEST"/weasis-espinopelvico-*.jar
+as_user cp "$JAR" "$DEST/"
+
+cat > "$DEST/espinopelvico.json" <<EOF
+{
+  "weasisPreferences": [
+    {
+      "code": "felix.auto.start.125",
+      "value": "file://$DEST/$(basename "$JAR")",
+      "description": "Plugin Parametros espinopelvicos (columna-spine.com)",
+      "type": "A",
+      "category": "FELIX_INSTALL"
+    }
+  ]
+}
+EOF
+chown "$USER_NAME" "$DEST/espinopelvico.json"
+
+OPTS="-Dfelix.extended.config.properties=file://$DEST/espinopelvico.json"
+CURRENT=$(as_user launchctl getenv JAVA_TOOL_OPTIONS || true)
+if [[ -n "$CURRENT" && "$CURRENT" != *felix.extended.config.properties* ]]; then
+  OPTS="$CURRENT $OPTS"
+fi
+
+cat > "$AGENT" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.columnaspine.weasis-espinopelvico</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/launchctl</string>
+    <string>setenv</string>
+    <string>JAVA_TOOL_OPTIONS</string>
+    <string>$OPTS</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+</dict>
+</plist>
+EOF
+chown "$USER_NAME" "$AGENT"
+
+launchctl bootout "gui/$USER_ID" "$AGENT" 2>/dev/null || true
+launchctl bootstrap "gui/$USER_ID" "$AGENT" 2>/dev/null || true
+as_user launchctl setenv JAVA_TOOL_OPTIONS "$OPTS"
+exit 0
