@@ -63,7 +63,7 @@ Convenciones: LL y TK positivos significan lordosis y cifosis. SVA y PT positivo
    8. **Cuerpo de C7** (opcional): ídem.
 4. Los valores y las líneas auxiliares (perpendicular de S1, línea a las caderas, plomada de C7) se actualizan en vivo. Para corregir, **seleccioná el trazo y arrastrá sus extremos**. Podés usar mover, zoom o cualquier otra herramienta de Weasis: el panel no te la cambia. Para volver a marcar, tocá un paso en la lista.
 5. **Borrar trazo** borra el trazo del paso elegido para volver a hacerlo. **Reiniciar** borra todos los trazos de la medición y empieza de nuevo.
-6. **Copiar resultados** copia el informe al portapapeles.
+6. **Copiar resultados** copia el informe al portapapeles. **Acerca de…** muestra la versión y el autor, y abre columna-spine.com.
 
 Los trazos son mediciones comunes de Weasis: se guardan y se exportan como cualquier otra. Las líneas auxiliares no se guardan.
 

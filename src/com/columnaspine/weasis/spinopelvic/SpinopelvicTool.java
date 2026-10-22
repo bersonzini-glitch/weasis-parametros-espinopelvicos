@@ -236,9 +236,39 @@ public class SpinopelvicTool extends PluginTool {
     JButton copy = new JButton("Copiar resultados");
     copy.addActionListener(
         e -> Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(report), null));
-    p.add(left(row(copy)));
+    JButton about = new JButton("Acerca de…");
+    about.addActionListener(e -> showAbout());
+    p.add(left(row(copy, about)));
     p.add(Box.createVerticalGlue());
     return p;
+  }
+
+  private static final String AUTHOR_URL = "https://www.columna-spine.com/";
+
+  private void showAbout() {
+    String version = "";
+    var bundle = org.osgi.framework.FrameworkUtil.getBundle(SpinopelvicTool.class);
+    if (bundle != null) version = " " + bundle.getVersion();
+    String text =
+        "<html><b>Parámetros espinopélvicos" + version + "</b><br><br>"
+            + "Plugin para Weasis que mide PI, PT, SS, LL, PI−LL, cifosis torácica,<br>"
+            + "T1PA y SVA, con los modificadores SRS-Schwab.<br><br>"
+            + "Autor: Dr. Bernardo Sonzini Astudillo<br>"
+            + "columna-spine.com<br><br>"
+            + "<span style='color:gray'>Herramienta de apoyo; no es un dispositivo médico.<br>"
+            + "Código abierto (licencia MIT).</span></html>";
+    Object[] options = {"Abrir columna-spine.com", "Cerrar"};
+    int choice =
+        JOptionPane.showOptionDialog(
+            this, text, "Acerca de", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
+            null, options, options[0]);
+    if (choice == 0) {
+      try {
+        java.awt.Desktop.getDesktop().browse(new java.net.URI(AUTHOR_URL));
+      } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "No pude abrir el navegador. La dirección es " + AUTHOR_URL);
+      }
+    }
   }
 
   private static JComponent row(JComponent... items) {
