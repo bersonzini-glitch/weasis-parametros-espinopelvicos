@@ -27,6 +27,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -36,7 +37,6 @@ import org.weasis.core.api.gui.util.ActionW;
 import org.weasis.core.api.image.util.Unit;
 import org.weasis.core.api.media.data.ImageElement;
 import org.weasis.core.ui.docking.PluginTool;
-import org.weasis.core.ui.editor.image.MeasureToolBar;
 import org.weasis.core.ui.editor.image.ViewCanvas;
 import org.weasis.core.ui.model.AbstractGraphicModel;
 import org.weasis.core.ui.model.GraphicModel;
@@ -126,9 +126,9 @@ public class SpinopelvicTool extends PluginTool {
   private final JTextArea results = new JTextArea();
   private final JLabel scale = new JLabel();
   private final JButton skip = new JButton("Saltar");
-  private final JButton unassign = new JButton("Quitar");
+  private final JButton unassign = new JButton("Borrar trazo");
   private boolean updatingList;
-  private boolean toolArmed;
+  private boolean wasShowing;
   private long rearmUntil;
 
   public SpinopelvicTool(Type type) {
@@ -189,6 +189,14 @@ public class SpinopelvicTool extends PluginTool {
         e -> {
           if (!e.getValueIsAdjusting() && !updatingList && state != null && stepList.getSelectedIndex() >= 0) {
             setActive(stepList.getSelectedIndex());
+          }
+        });
+    stepList.addMouseListener(
+        new java.awt.event.MouseAdapter() {
+          @Override
+          public void mouseClicked(java.awt.event.MouseEvent e) {
+            int i = stepList.locationToIndex(e.getPoint());
+            if (state != null && i >= 0) setActive(i);
           }
         });
     JScrollPane listScroll = new JScrollPane(stepList);
@@ -281,19 +289,39 @@ public class SpinopelvicTool extends PluginTool {
     advance(state.active + 1);
   }
 
+  /** Deletes the trace of the selected step from the image and waits for a new one. */
   private void unassignStep() {
     if (state == null) return;
     int i = stepList.getSelectedIndex() >= 0 ? stepList.getSelectedIndex() : state.active;
     if (i < 0 || state.assigned[i] == null) return;
-    state.assigned[i] = null; // the graphic stays on the image as a plain measurement
+    view.getGraphicManager().removeGraphic(state.assigned[i]);
+    state.assigned[i] = null;
+    state.signature = "";
+    view.getJComponent().repaint();
     setActive(i);
   }
 
+  /** Deletes every trace of the measurement and the helper lines, and starts again from step 1. */
   private void resetAll() {
     if (state == null) return;
-    java.util.Arrays.fill(state.assigned, null);
-    java.util.Arrays.fill(state.skipped, false);
-    state.known.addAll(view.getGraphicManager().getModels());
+    int answer =
+        JOptionPane.showConfirmDialog(
+            this,
+            "¿Borrar de la imagen todos los trazos de la medición espinopélvica?",
+            "Reiniciar",
+            JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.WARNING_MESSAGE);
+    if (answer != JOptionPane.OK_OPTION) return;
+    GraphicModel model = view.getGraphicManager();
+    for (int i = 0; i < state.assigned.length; i++) {
+      if (state.assigned[i] != null) model.removeGraphic(state.assigned[i]);
+      state.assigned[i] = null;
+      state.skipped[i] = false;
+    }
+    for (Graphic g : state.helpers) model.removeGraphic(g);
+    state.helpers.clear();
+    state.signature = "";
+    view.getJComponent().repaint();
     advance(0);
   }
 
@@ -311,19 +339,6 @@ public class SpinopelvicTool extends PluginTool {
               }
             });
     em.changeLeftMouseAction(ActionW.MEASURE.cmd());
-  }
-
-  /**
-   * With "draw only once" (the Weasis default) the measurement combo falls back to the selection
-   * pointer after every graphic. While a step is waiting and the left button is still on the
-   * measurement tool, that reset is undone; any other tool the user picks is left alone.
-   */
-  private boolean measureToolWasReset() {
-    EventManager em = EventManager.getInstance();
-    if (!ActionW.MEASURE.cmd().equals(em.getMouseActions().getLeft())) return false;
-    return em.getAction(ActionW.DRAW_MEASURE)
-        .map(c -> c.getSelectedItem() == MeasureToolBar.selectionGraphic)
-        .orElse(false);
   }
 
   private boolean activeToolMatches() {
@@ -352,21 +367,21 @@ public class SpinopelvicTool extends PluginTool {
       state = s;
       view = v;
       s.signature = "";
-      toolArmed = false;
+      wasShowing = false; // a new image counts as opening the panel on it
       refreshUi();
     }
-    // The panel takes over the measurement tool only once it has been opened on this image; Weasis
-    // folds a side panel away as soon as the image is clicked, so the steps go on while it is folded.
+    // The panel puts the step's tool on the left button only when the panel is opened, when a step
+    // is clicked (setActive) and right after a graphic is assigned, because Weasis falls back to the
+    // selection pointer after each drawing ("draw only once"). Any tool the user picks afterwards
+    // (pan, zoom, the selection pointer to edit a trace) is left alone.
     boolean showing = isShowing();
-    if (showing && !s.engaged) {
-      s.engaged = true;
-      toolArmed = false;
-    }
+    boolean opened = showing && !wasShowing;
+    wasShowing = showing;
+    if (showing) s.engaged = true;
     boolean justAssigned = System.currentTimeMillis() < rearmUntil && !activeToolMatches();
-    if (s.engaged && s.active >= 0 && (!toolArmed || justAssigned || measureToolWasReset())) {
+    if (s.engaged && s.active >= 0 && (opened || justAssigned)) {
       selectTool(step(s.active).kind());
     }
-    toolArmed = s.engaged;
 
     List<Graphic> graphics = new ArrayList<>(model.getModels());
     boolean changed = false;
