@@ -1,5 +1,5 @@
 @echo off
-rem Instala el plugin "Parametros espinopelvicos" en Weasis para este usuario de Windows.
+rem Instala el plugin SagitalApp (parametros espinopelvicos) en Weasis para este usuario de Windows.
 rem Copia el plugin a %USERPROFILE%\.weasis\plugins, escribe la configuracion de Weasis y define
 rem la variable de usuario JAVA_TOOL_OPTIONS para que Weasis la lea al arrancar.
 setlocal
@@ -20,7 +20,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command ^
   "$d = Join-Path $env:USERPROFILE '.weasis\plugins';" ^
   "$jar = ([Uri](Join-Path $d '%JAR%')).AbsoluteUri;" ^
   "$jsonPath = Join-Path $d 'espinopelvico.json';" ^
-  "$pref = [ordered]@{ code = 'felix.auto.start.125'; value = $jar; description = 'Plugin Parametros espinopelvicos (columna-spine.com)'; type = 'A'; category = 'FELIX_INSTALL' };" ^
+  "$pref = [ordered]@{ code = 'felix.auto.start.125'; value = $jar; description = 'Plugin SagitalApp (columna-spine.com)'; type = 'A'; category = 'FELIX_INSTALL' };" ^
   "$text = ConvertTo-Json -Depth 4 -InputObject ([ordered]@{ weasisPreferences = @($pref) });" ^
   "[IO.File]::WriteAllText($jsonPath, $text, (New-Object Text.UTF8Encoding $false));" ^
   "$opt = '-Dfelix.extended.config.properties=' + ([Uri]$jsonPath).AbsoluteUri;" ^
@@ -34,7 +34,7 @@ if errorlevel 1 (
 )
 echo.
 echo Listo. Cerra Weasis si estaba abierto y volve a abrirlo.
-echo Abri una telerradiografia de perfil y busca la pestana "Espinopelvico"
+echo Abri una telerradiografia de perfil y busca la pestana "SagitalApp"
 echo en la barra lateral derecha del visor.
 echo.
 pause

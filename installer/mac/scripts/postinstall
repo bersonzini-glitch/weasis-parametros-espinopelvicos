@@ -25,7 +25,7 @@ cat > "$DEST/espinopelvico.json" <<EOF
     {
       "code": "felix.auto.start.125",
       "value": "file://$DEST/$(basename "$JAR")",
-      "description": "Plugin Parametros espinopelvicos (columna-spine.com)",
+      "description": "Plugin SagitalApp (columna-spine.com)",
       "type": "A",
       "category": "FELIX_INSTALL"
     }

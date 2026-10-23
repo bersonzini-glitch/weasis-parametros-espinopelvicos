@@ -56,7 +56,7 @@ import org.weasis.dicom.viewer2d.EventManager;
  */
 public class SpinopelvicTool extends PluginTool {
 
-  public static final String NAME = "Espinopélvico";
+  public static final String NAME = "SagitalApp";
 
   enum Kind {
     CIRCLE("Círculo por 3 puntos"),
@@ -325,8 +325,8 @@ public class SpinopelvicTool extends PluginTool {
   private void showAbout() {
     String version = " " + bundleVersion();
     String text =
-        "<html><b>Parámetros espinopélvicos" + version + "</b><br><br>"
-            + "Plugin para Weasis que mide PI, PT, SS, LL, PI−LL, cifosis torácica,<br>"
+        "<html><b>SagitalApp" + version + "</b><br><br>"
+            + "Parámetros espinopélvicos en Weasis: mide PI, PT, SS, LL, PI−LL, cifosis torácica,<br>"
             + "T1PA y SVA, con los modificadores SRS-Schwab.<br><br>"
             + "Autor: Dr. Bernardo Sonzini Astudillo<br>"
             + "columna-spine.com<br><br>"

@@ -1,5 +1,5 @@
 @echo off
-rem Desinstala el plugin "Parametros espinopelvicos" de Weasis para este usuario.
+rem Desinstala el plugin SagitalApp (parametros espinopelvicos) de Weasis para este usuario.
 setlocal
 set "DEST=%USERPROFILE%\.weasis\plugins"
 del /q "%DEST%\weasis-espinopelvico-*.jar" 2>nul

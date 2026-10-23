@@ -1,4 +1,10 @@
-# Parámetros espinopélvicos — Weasis plugin
+# SagitalApp para Weasis — parámetros espinopélvicos
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/sagitalapp-logo-dark.png">
+  <img alt="SagitalApp" src="docs/sagitalapp-logo-light.png" width="320">
+</picture>
+
 
 [Español](#español) · [English](#english)
 
@@ -32,7 +38,7 @@ Convenciones: LL y TK positivos significan lordosis y cifosis. SVA y PT positivo
 ### Instalación en Mac
 
 1. Cerrá Weasis.
-2. Descargá **`Instalar-Espinopelvico-Weasis-Mac.pkg`** desde [Releases](../../releases/latest) y hacé doble clic.
+2. Descargá **`Instalar-SagitalApp-Weasis-Mac.pkg`** desde [Releases](../../releases/latest) y hacé doble clic.
 3. Como el instalador no está notarizado por Apple, la Mac puede decir que no puede verificarlo: tocá **OK**, andá a **Ajustes del Sistema → Privacidad y seguridad**, bajá hasta el final y tocá **"Abrir igualmente"**.
 4. Seguí el instalador (pide tu contraseña) y abrí Weasis.
 
@@ -41,7 +47,7 @@ Convenciones: LL y TK positivos significan lordosis y cifosis. SVA y PT positivo
 ### Instalación en Windows
 
 1. Cerrá Weasis.
-2. Descargá **`Espinopelvico-Weasis-Windows.zip`** desde [Releases](../../releases/latest).
+2. Descargá **`SagitalApp-Weasis-Windows.zip`** desde [Releases](../../releases/latest).
 3. Hacé clic derecho en el `.zip` → **Extraer todo**. Tiene que quedar una carpeta con `instalar.bat`, `desinstalar.bat` y el archivo `.jar`.
 4. Hacé doble clic en **`instalar.bat`**. Si Windows muestra "Windows protegió su PC", tocá **Más información → Ejecutar de todas formas**. No necesita permisos de administrador.
 5. Cuando diga "Listo", abrí Weasis.
@@ -51,7 +57,7 @@ Convenciones: LL y TK positivos significan lordosis y cifosis. SVA y PT positivo
 ### Uso
 
 1. Abrí en Weasis una **telerradiografía de columna completa de perfil**, de pie.
-2. En la barra lateral derecha del visor, abrí la pestaña **Espinopélvico**. Conviene fijarla con el botón de su esquina superior para que quede abierta. Igual funciona si se pliega al hacer clic en la imagen.
+2. En la barra lateral derecha del visor, abrí la pestaña **SagitalApp**. Conviene fijarla con el botón de su esquina superior para que quede abierta. Igual funciona si se pliega al hacer clic en la imagen.
 3. El panel te va pidiendo cada paso y **elige solo la herramienta de Weasis** que corresponde:
    1. **Cabeza femoral 1:** *círculo por 3 puntos*. Tres clics sobre el borde de la cabeza femoral.
    2. **Cabeza femoral 2** (opcional; **Saltar** si se superponen): otro círculo.
@@ -103,14 +109,14 @@ PI, PT, SS, LL (L1–S1), PI−LL, TK (T4 or T5 to T12), T1PA and SVA, with the 
 
 ### Install
 
-- **Mac:** quit Weasis, run **`Instalar-Espinopelvico-Weasis-Mac.pkg`** from [Releases](../../releases/latest). If macOS says it can't verify the installer, allow it in **System Settings → Privacy & Security → Open Anyway**. Then open Weasis.
-- **Windows:** quit Weasis, extract **`Espinopelvico-Weasis-Windows.zip`**, double-click **`instalar.bat`** (no admin rights needed; if SmartScreen appears, choose **More info → Run anyway**). Then open Weasis.
+- **Mac:** quit Weasis, run **`Instalar-SagitalApp-Weasis-Mac.pkg`** from [Releases](../../releases/latest). If macOS says it can't verify the installer, allow it in **System Settings → Privacy & Security → Open Anyway**. Then open Weasis.
+- **Windows:** quit Weasis, extract **`SagitalApp-Weasis-Windows.zip`**, double-click **`instalar.bat`** (no admin rights needed; if SmartScreen appears, choose **More info → Run anyway**). Then open Weasis.
 
 Uninstall with `Desinstalar Espinopelvico Weasis.command` (Mac, in `/Library/Application Support/WeasisEspinopelvico`) or `desinstalar.bat` (Windows).
 
 ### Usage
 
-Open a standing lateral whole-spine radiograph and the **Espinopélvico** tab on the right side of the 2D viewer. The panel picks the right Weasis tool for each step:
+Open a standing lateral whole-spine radiograph and the **SagitalApp** tab on the right side of the 2D viewer. The panel picks the right Weasis tool for each step:
 - **Femoral heads:** 3-point circle.
 - **S1, L1, T12 and T4/T5 endplates:** line.
 - **T1 and C7 bodies:** a diagonal line, whose midpoint is taken as the body center.

@@ -43,11 +43,11 @@ pkgbuild --root build/pkgroot --scripts installer/mac/scripts --install-location
   --identifier com.columnaspine.weasis.spinopelvic --version "$VERSION" build/plugin.pkg >/dev/null
 sed "s/VERSION/$VERSION/" installer/mac/distribution.xml > build/distribution.xml
 productbuild --distribution build/distribution.xml --resources installer/mac/resources --package-path build \
-  "dist/Instalar-Espinopelvico-Weasis-Mac.pkg" >/dev/null
+  "dist/Instalar-SagitalApp-Weasis-Mac.pkg" >/dev/null
 
 # ---- Windows (.zip): bundle + instalar.bat / desinstalar.bat.
-WIN=build/Espinopelvico-Weasis-Windows
+WIN=build/SagitalApp-Weasis-Windows
 mkdir -p "$WIN"
 cp "$OUT" installer/windows/instalar.bat installer/windows/desinstalar.bat "$WIN/"
-(cd build && rm -f ../dist/Espinopelvico-Weasis-Windows.zip && zip -qr ../dist/Espinopelvico-Weasis-Windows.zip Espinopelvico-Weasis-Windows)
+(cd build && rm -f ../dist/SagitalApp-Weasis-Windows.zip && zip -qr ../dist/SagitalApp-Weasis-Windows.zip SagitalApp-Weasis-Windows)
 echo "Built installers in dist/"
