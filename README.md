@@ -105,6 +105,10 @@ Efecto secundario inofensivo: los programas Java que ejecutes desde la terminal 
 
 Necesita un JDK 25 en `.tools/` (Weasis 4.7 está compilado para Java 25) y Weasis instalado en `/Applications`. El script toma de ahí los módulos contra los que compila.
 
+### Privacidad
+
+Al instalarse o actualizarse, el plugin avisa a sagitalapp.com para que el autor sepa cuántos colegas lo usan. Envía la versión del plugin y del programa, el sistema operativo y un identificador al azar guardado en esa computadora. Con la conexión, el servidor estima la ubicación aproximada (país, provincia y ciudad) y no guarda la IP. **Nunca envía imágenes, datos de pacientes ni mediciones.**
+
 ### Aviso
 
 Herramienta de apoyo para medición. Los valores dependen de dónde se marquen los reparos y deben ser revisados por el profesional. Este software **no es un dispositivo médico** y se distribuye "tal cual", sin garantía (ver [LICENSE](LICENSE)).
@@ -151,6 +155,10 @@ The bundle lives in `~/.weasis/plugins` with an extension config (`espinopelvico
 | `src/.../Updater.java` | Checks the latest GitHub release and installs its bundle in place |
 | `src/.../Geometry.java` | Geometry (no Weasis dependency) |
 | `test/GeometryTest.java` | Synthetic tests: facing both ways, lines drawn in either direction |
+
+### Privacy
+
+On install and on each update the plugin tells sagitalapp.com, so the author can count users: the plugin and host versions, the OS and a random id stored on that computer. The server keeps only the approximate location (country, region, city) derived from the connection, never the IP. **No images, patient data or measurements are ever sent.**
 
 ### Disclaimer
 

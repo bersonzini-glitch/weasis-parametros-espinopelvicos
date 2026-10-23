@@ -149,6 +149,7 @@ public class SpinopelvicTool extends PluginTool {
     setLayout(new BorderLayout());
     add(buildPanel(), BorderLayout.NORTH);
     new Timer(300, e -> tick()).start();
+    Updater.reportInstall(bundleVersion());
     Updater.latest(bundleVersion())
         .thenAccept(rel -> { if (rel != null) javax.swing.SwingUtilities.invokeLater(() -> showUpdate(rel)); });
   }
@@ -335,7 +336,10 @@ public class SpinopelvicTool extends PluginTool {
             + "Autor: Dr. Bernardo Sonzini Astudillo<br>"
             + "columna-spine.com<br><br>"
             + "<span style='color:gray'>Herramienta de apoyo; no es un dispositivo médico.<br>"
-            + "Código abierto (licencia MIT).</span></html>";
+            + "Código abierto (licencia MIT).<br><br>"
+            + "Al instalarse o actualizarse avisa a sagitalapp.com la versión y la<br>"
+            + "ubicación aproximada (país y ciudad), para contar usuarios.<br>"
+            + "Nunca envía imágenes ni datos de pacientes.</span></html>";
     Object[] options = {"Abrir columna-spine.com", "Cerrar"};
     int choice =
         JOptionPane.showOptionDialog(

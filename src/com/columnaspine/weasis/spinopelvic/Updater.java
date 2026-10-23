@@ -90,6 +90,48 @@ final class Updater {
     return out.toString();
   }
 
+  private static boolean reported;
+
+  /**
+   * Once per Weasis session: tells sagitalapp.com about a first install or a new version, so the
+   * author can count installs. Sends the plugin and Weasis versions, the OS and a random id kept
+   * in the Java user preferences; the server derives an approximate location from the connection
+   * and stores no IP.
+   */
+  static synchronized void reportInstall(String version) {
+    if (reported) return;
+    reported = true;
+    java.util.prefs.Preferences prefs = java.util.prefs.Preferences.userRoot().node("com/columnaspine/sagitalapp");
+    String id = prefs.get("instalacion_id", null), previous = prefs.get("version_reportada", null);
+    if (id != null && version.equals(previous)) return;
+    String newId = id != null ? id : java.util.UUID.randomUUID().toString();
+    String os = System.getProperty("os.name", "").toLowerCase();
+    String so = os.contains("mac") ? "mac" : os.contains("win") ? "windows" : "linux";
+    String json =
+        "{\"plugin\":\"weasis\",\"evento\":\"" + (id == null ? "instalacion" : "actualizacion")
+            + "\",\"version\":\"" + version + "\",\"so\":\"" + so
+            + "\",\"app_version\":\"" + System.getProperty("weasis.version", "").replaceAll("[^0-9A-Za-z.-]", "")
+            + "\",\"instalacion_id\":\"" + newId + "\""
+            + (previous == null ? "" : ",\"version_anterior\":\"" + previous + "\"") + "}";
+    HttpRequest req =
+        HttpRequest.newBuilder(URI.create("https://sagitalapp.com/api/instalacion"))
+            .header("Content-Type", "application/json")
+            .timeout(Duration.ofSeconds(15))
+            .POST(HttpRequest.BodyPublishers.ofString(json))
+            .build();
+    HTTP.sendAsync(req, HttpResponse.BodyHandlers.discarding())
+        .thenAccept(r -> {
+          if (r.statusCode() / 100 != 2) return; // try again next session
+          prefs.put("instalacion_id", newId);
+          prefs.put("version_reportada", version);
+          try {
+            prefs.flush();
+          } catch (Exception ignored) {
+            // Preferences are saved on exit anyway.
+          }
+        });
+  }
+
   /** "1.1.0" > "1.0.2": numeric components, missing ones count as 0. */
   static boolean isNewer(String candidate, String current) {
     String[] a = candidate.split("\\."), b = current.split("\\.");

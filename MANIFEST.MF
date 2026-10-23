@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: com.columnaspine.weasis.spinopelvic
 Bundle-Name: SagitalApp (parametros espinopelvicos)
-Bundle-Version: 1.3.0
+Bundle-Version: 1.4.0
 Bundle-Vendor: columna-spine.com
 Bundle-License: MIT
 Bundle-RequiredExecutionEnvironment: JavaSE-25
