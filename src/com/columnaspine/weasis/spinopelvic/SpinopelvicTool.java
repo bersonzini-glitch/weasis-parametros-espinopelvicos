@@ -46,7 +46,7 @@ import org.weasis.core.ui.model.graphic.imp.line.LineGraphic;
 import org.weasis.core.ui.model.layer.GraphicLayer;
 import org.weasis.core.ui.model.layer.LayerType;
 import org.weasis.core.ui.model.layer.imp.DefaultLayer;
-import org.weasis.dicom.viewer2d.EventManager;
+import org.weasis.core.ui.editor.image.ImageViewerEventManager;
 
 /**
  * Side panel of the DICOM 2D viewer. Each landmark is drawn with a native Weasis measurement
@@ -133,8 +133,12 @@ public class SpinopelvicTool extends PluginTool {
   private boolean wasShowing;
   private long rearmUntil;
 
-  public SpinopelvicTool(Type type) {
+  /** The event manager of the viewer this panel belongs to (DICOM 2D viewer or image viewer). */
+  private final java.util.function.Supplier<ImageViewerEventManager<?>> events;
+
+  public SpinopelvicTool(Type type, java.util.function.Supplier<ImageViewerEventManager<?>> events) {
     super(NAME, type, 130);
+    this.events = events;
     var icon = SpinopelvicTool.class.getResource("/icon/pelvis-16.png");
     if (icon != null) {
       dockable.setTitleIcon(new ImageIcon(icon));
@@ -426,7 +430,7 @@ public class SpinopelvicTool extends PluginTool {
 
   /** Puts the matching Weasis measurement tool on the left mouse button. */
   private void selectTool(Kind kind) {
-    EventManager em = EventManager.getInstance();
+    ImageViewerEventManager<?> em = events.get();
     em.getAction(ActionW.DRAW_MEASURE)
         .ifPresent(
             combo -> {
@@ -441,7 +445,7 @@ public class SpinopelvicTool extends PluginTool {
   }
 
   private boolean activeToolMatches() {
-    EventManager em = EventManager.getInstance();
+    ImageViewerEventManager<?> em = events.get();
     if (state == null || state.active < 0) return true;
     Kind kind = step(state.active).kind();
     return ActionW.MEASURE.cmd().equals(em.getMouseActions().getLeft())
@@ -451,7 +455,7 @@ public class SpinopelvicTool extends PluginTool {
   // ---------------------------------------------------------------- Polling
 
   private void tick() {
-    ViewCanvas<?> v = EventManager.getInstance().getSelectedViewPane();
+    ViewCanvas<?> v = events.get().getSelectedViewPane();
     if (v == null || v.getGraphicManager() == null || v.getImage() == null) {
       if (state != null || view != null) {
         state = null;

@@ -56,7 +56,7 @@ Convenciones: LL y TK positivos significan lordosis y cifosis. SVA y PT positivo
 
 ### Uso
 
-1. Abrí en Weasis una **telerradiografía de columna completa de perfil**, de pie.
+1. Abrí en Weasis una **telerradiografía de columna completa de perfil**, de pie. Puede ser DICOM o una imagen común (JPG, PNG, etc.), por ejemplo una foto de la placa.
 2. En la barra lateral derecha del visor, abrí la pestaña **SagitalApp**. Conviene fijarla con el botón de su esquina superior para que quede abierta. Igual funciona si se pliega al hacer clic en la imagen.
 3. El panel te va pidiendo cada paso y **elige solo la herramienta de Weasis** que corresponde:
    1. **Cabeza femoral 1:** *círculo por 3 puntos*. Tres clics sobre el borde de la cabeza femoral.
@@ -116,7 +116,7 @@ Uninstall with `Desinstalar Espinopelvico Weasis.command` (Mac, in `/Library/App
 
 ### Usage
 
-Open a standing lateral whole-spine radiograph and the **SagitalApp** tab on the right side of the 2D viewer. The panel picks the right Weasis tool for each step:
+Open a standing lateral whole-spine radiograph, DICOM or a plain image (JPG, PNG…), and the **SagitalApp** tab on the right side of the viewer. The panel picks the right Weasis tool for each step:
 - **Femoral heads:** 3-point circle.
 - **S1, L1, T12 and T4/T5 endplates:** line.
 - **T1 and C7 bodies:** a diagonal line, whose midpoint is taken as the body center.
@@ -135,7 +135,7 @@ The bundle lives in `~/.weasis/plugins` with an extension config (`espinopelvico
 
 | File | Purpose |
 |---|---|
-| `src/.../SpinopelvicToolFactory.java` | OSGi component (`OSGI-INF/spinopelvic-tool.xml`) registering the panel in the DICOM 2D viewer |
+| `src/.../SpinopelvicToolFactory.java` | OSGi components (`OSGI-INF/spinopelvic-tool.xml`, `spinopelvic-image-tool.xml`) registering a panel in the DICOM 2D viewer and in the image viewer |
 | `src/.../SpinopelvicTool.java` | Panel, step flow, tool selection, assignment of graphics, helper lines |
 | `src/.../Updater.java` | Checks the latest GitHub release and installs its bundle in place |
 | `src/.../Geometry.java` | Geometry (no Weasis dependency) |

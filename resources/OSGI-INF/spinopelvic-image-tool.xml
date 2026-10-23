@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" name="com.columnaspine.weasis.spinopelvic.SpinopelvicToolFactory.Image">
+  <property name="org.weasis.base.viewer2d.View2dContainer" value="true"/>
+  <service>
+    <provide interface="org.weasis.core.api.gui.InsertableFactory"/>
+  </service>
+  <implementation class="com.columnaspine.weasis.spinopelvic.SpinopelvicToolFactory$Image"/>
+</scr:component>
