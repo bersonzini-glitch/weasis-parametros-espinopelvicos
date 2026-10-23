@@ -132,6 +132,38 @@ final class Updater {
         });
   }
 
+  private static java.util.prefs.Preferences prefs() {
+    return java.util.prefs.Preferences.userRoot().node("com/columnaspine/sagitalapp");
+  }
+
+  /** The last message received from sagitalapp.com, shown while offline ("" when none). */
+  static String cachedNotice() {
+    return prefs().get("aviso", "");
+  }
+
+  /** The author's current message; completes with null when offline, so the cached one stays. */
+  static CompletableFuture<String> fetchNotice() {
+    HttpRequest req =
+        HttpRequest.newBuilder(URI.create("https://sagitalapp.com/api/aviso"))
+            .header("Cache-Control", "no-cache")
+            .timeout(Duration.ofSeconds(15))
+            .build();
+    return HTTP.sendAsync(req, HttpResponse.BodyHandlers.ofString())
+        .thenApply(r -> r.statusCode() == 200 ? field(r.body(), "texto") : null)
+        .thenApply(text -> {
+          if (text != null) {
+            prefs().put("aviso", text);
+            try {
+              prefs().flush();
+            } catch (Exception ignored) {
+              // Saved on exit anyway.
+            }
+          }
+          return text;
+        })
+        .exceptionally(e -> null);
+  }
+
   /** "1.1.0" > "1.0.2": numeric components, missing ones count as 0. */
   static boolean isNewer(String candidate, String current) {
     String[] a = candidate.split("\\."), b = current.split("\\.");

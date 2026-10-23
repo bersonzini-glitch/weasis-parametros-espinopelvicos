@@ -107,7 +107,7 @@ Necesita un JDK 25 en `.tools/` (Weasis 4.7 está compilado para Java 25) y Weas
 
 ### Privacidad
 
-Al instalarse o actualizarse, el plugin avisa a sagitalapp.com para que el autor sepa cuántos colegas lo usan. Envía la versión del plugin y del programa, el sistema operativo y un identificador al azar guardado en esa computadora. Con la conexión, el servidor estima la ubicación aproximada (país, provincia y ciudad) y no guarda la IP. **Nunca envía imágenes, datos de pacientes ni mediciones.**
+Al instalarse o actualizarse, el plugin avisa a sagitalapp.com para que el autor sepa cuántos colegas lo usan, y cada vez que se abre el panel descarga el aviso del autor que se muestra abajo (sin internet queda el último). Al avisar envía la versión del plugin y del programa, el sistema operativo y un identificador al azar guardado en esa computadora. Con la conexión, el servidor estima la ubicación aproximada (país, provincia y ciudad) y no guarda la IP. **Nunca envía imágenes, datos de pacientes ni mediciones.**
 
 ### Aviso
 
@@ -158,7 +158,7 @@ The bundle lives in `~/.weasis/plugins` with an extension config (`espinopelvico
 
 ### Privacy
 
-On install and on each update the plugin tells sagitalapp.com, so the author can count users: the plugin and host versions, the OS and a random id stored on that computer. The server keeps only the approximate location (country, region, city) derived from the connection, never the IP. **No images, patient data or measurements are ever sent.**
+On install and on each update the plugin tells sagitalapp.com, so the author can count users, and downloads the author's notice shown at the bottom of the panel (the last one stays when offline). It sends the plugin and host versions, the OS and a random id stored on that computer. The server keeps only the approximate location (country, region, city) derived from the connection, never the IP. **No images, patient data or measurements are ever sent.**
 
 ### Disclaimer
 

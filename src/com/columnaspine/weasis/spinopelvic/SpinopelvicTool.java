@@ -128,6 +128,8 @@ public class SpinopelvicTool extends PluginTool {
   private final JButton skip = new JButton("Saltar");
   private final JButton unassign = new JButton("Borrar trazo");
   private final JButton update = new JButton();
+  private final JTextArea notice = new JTextArea();
+  private long noticeFetched;
   private Updater.Release release;
   private boolean updatingList;
   private boolean wasShowing;
@@ -150,6 +152,7 @@ public class SpinopelvicTool extends PluginTool {
     add(buildPanel(), BorderLayout.NORTH);
     new Timer(300, e -> tick()).start();
     Updater.reportInstall(bundleVersion());
+    refreshNotice();
     Updater.latest(bundleVersion())
         .thenAccept(rel -> { if (rel != null) javax.swing.SwingUtilities.invokeLater(() -> showUpdate(rel)); });
   }
@@ -254,11 +257,34 @@ public class SpinopelvicTool extends PluginTool {
     JButton about = new JButton("Acerca de…");
     about.addActionListener(e -> showAbout());
     p.add(left(row(copy, about)));
+    p.add(Box.createVerticalStrut(6));
+
+    // Messages from the author (sagitalapp.com), below everything else.
+    notice.setEditable(false);
+    notice.setLineWrap(true);
+    notice.setWrapStyleWord(true);
+    notice.setRows(3);
+    notice.setFont(notice.getFont().deriveFont(12f));
+    notice.setText(Updater.cachedNotice());
+    JScrollPane noticeScroll = new JScrollPane(notice);
+    noticeScroll.setBorder(BorderFactory.createTitledBorder("Avisos de SagitalApp"));
+    noticeScroll.setPreferredSize(new Dimension(260, 86));
+    p.add(left(noticeScroll));
     p.add(Box.createVerticalGlue());
     return p;
   }
 
   private static final String AUTHOR_URL = "https://www.columna-spine.com/";
+
+  /** Asks sagitalapp.com for the current message, at most once a minute; offline the last one stays. */
+  private void refreshNotice() {
+    long now = System.currentTimeMillis();
+    if (now - noticeFetched < 60_000) return;
+    noticeFetched = now;
+    Updater.fetchNotice().thenAccept(text -> {
+      if (text != null) javax.swing.SwingUtilities.invokeLater(() -> notice.setText(text));
+    });
+  }
 
   private static String bundleVersion() {
     var bundle = org.osgi.framework.FrameworkUtil.getBundle(SpinopelvicTool.class);
@@ -338,7 +364,8 @@ public class SpinopelvicTool extends PluginTool {
             + "<span style='color:gray'>Herramienta de apoyo; no es un dispositivo médico.<br>"
             + "Código abierto (licencia MIT).<br><br>"
             + "Al instalarse o actualizarse avisa a sagitalapp.com la versión y la<br>"
-            + "ubicación aproximada (país y ciudad), para contar usuarios.<br>"
+            + "ubicación aproximada (país y ciudad), para contar usuarios,<br>"
+            + "y desde ahí recibe los avisos del autor.<br>"
             + "Nunca envía imágenes ni datos de pacientes.</span></html>";
     Object[] options = {"Abrir columna-spine.com", "Cerrar"};
     int choice =
@@ -484,6 +511,7 @@ public class SpinopelvicTool extends PluginTool {
     boolean showing = isShowing();
     boolean opened = showing && !wasShowing;
     wasShowing = showing;
+    if (opened) refreshNotice();
     if (showing) s.engaged = true;
     boolean justAssigned = System.currentTimeMillis() < rearmUntil && !activeToolMatches();
     if (s.engaged && s.active >= 0 && (opened || justAssigned)) {
