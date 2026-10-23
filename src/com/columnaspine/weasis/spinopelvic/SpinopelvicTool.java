@@ -128,7 +128,7 @@ public class SpinopelvicTool extends PluginTool {
   private final JButton skip = new JButton("Saltar");
   private final JButton unassign = new JButton("Borrar trazo");
   private final JButton update = new JButton();
-  private final JTextArea notice = new JTextArea();
+  private final javax.swing.JEditorPane notice = new javax.swing.JEditorPane("text/html", "");
   private long noticeFetched;
   private Updater.Release release;
   private boolean updatingList;
@@ -260,13 +260,18 @@ public class SpinopelvicTool extends PluginTool {
     p.add(Box.createVerticalStrut(6));
 
     // Messages from the author (sagitalapp.com), below everything else.
+    // HTML so that links in the message can be clicked; they open in the browser.
     notice.setEditable(false);
-    notice.setLineWrap(true);
-    notice.setWrapStyleWord(true);
-    notice.setRows(3);
-    notice.setFont(notice.getFont().deriveFont(12f));
-    notice.setText(Updater.cachedNotice());
+    notice.putClientProperty(javax.swing.JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
+    notice.setFont(scale.getFont().deriveFont(12f));
+    notice.addHyperlinkListener(e -> {
+      if (e.getEventType() == javax.swing.event.HyperlinkEvent.EventType.ACTIVATED && e.getURL() != null) {
+        browse(e.getURL().toString());
+      }
+    });
+    showNotice(Updater.cachedNotice());
     JScrollPane noticeScroll = new JScrollPane(notice);
+    noticeScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     noticeScroll.setBorder(BorderFactory.createTitledBorder("Avisos de SagitalApp"));
     noticeScroll.setPreferredSize(new Dimension(260, 86));
     p.add(left(noticeScroll));
@@ -282,8 +287,13 @@ public class SpinopelvicTool extends PluginTool {
     if (now - noticeFetched < 60_000) return;
     noticeFetched = now;
     Updater.fetchNotice().thenAccept(text -> {
-      if (text != null) javax.swing.SwingUtilities.invokeLater(() -> notice.setText(text));
+      if (text != null) javax.swing.SwingUtilities.invokeLater(() -> showNotice(text));
     });
+  }
+
+  private void showNotice(String text) {
+    notice.setText(Updater.noticeHtml(text));
+    notice.setCaretPosition(0);
   }
 
   private static String bundleVersion() {

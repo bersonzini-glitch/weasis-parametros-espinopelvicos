@@ -136,6 +136,44 @@ final class Updater {
     return java.util.prefs.Preferences.userRoot().node("com/columnaspine/sagitalapp");
   }
 
+  private static final Pattern LINK =
+      Pattern.compile("\\[([^\\]\\n]+)\\]\\((https?://[^\\s)]+)\\)|(https?://[^\\s<>\"]+|www\\.[^\\s<>\"]+)");
+
+  /**
+   * The message as HTML for the panel: escaped, line breaks kept, and links made clickable, either
+   * written as a bare address (https://… or www.…) or as [texto](https://…).
+   */
+  static String noticeHtml(String text) {
+    StringBuilder out = new StringBuilder("<html><body style='margin:2px'>");
+    Matcher m = LINK.matcher(text);
+    int last = 0;
+    while (m.find()) {
+      out.append(escape(text.substring(last, m.start())));
+      String label, url, tail = "";
+      if (m.group(1) != null) {
+        label = m.group(1);
+        url = m.group(2);
+      } else {
+        url = m.group(3);
+        // A sentence's closing punctuation is not part of the address.
+        while (!url.isEmpty() && ".,;:!?)".indexOf(url.charAt(url.length() - 1)) >= 0) {
+          tail = url.charAt(url.length() - 1) + tail;
+          url = url.substring(0, url.length() - 1);
+        }
+        label = url;
+        if (url.startsWith("www.")) url = "https://" + url;
+      }
+      out.append("<a href=\"").append(escape(url)).append("\">").append(escape(label)).append("</a>").append(escape(tail));
+      last = m.end();
+    }
+    out.append(escape(text.substring(last))).append("</body></html>");
+    return out.toString();
+  }
+
+  private static String escape(String s) {
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;").replace("\n", "<br>");
+  }
+
   /** The last message received from sagitalapp.com, shown while offline ("" when none). */
   static String cachedNotice() {
     return prefs().get("aviso", "");
