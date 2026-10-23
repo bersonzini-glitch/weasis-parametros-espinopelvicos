@@ -137,11 +137,12 @@ final class Updater {
   }
 
   private static final Pattern LINK =
-      Pattern.compile("\\[([^\\]\\n]+)\\]\\((https?://[^\\s)]+)\\)|(https?://[^\\s<>\"]+|www\\.[^\\s<>\"]+)");
+      Pattern.compile(
+          "\\[([^\\]\\n]+)\\]\\((https?://[^\\s)]+)\\)|(https?://[^\\s<>\"]+|www\\.[^\\s<>\"]+)|([\\w.+-]+@[\\w-]+(?:\\.[\\w-]+)+)");
 
   /**
    * The message as HTML for the panel: escaped, line breaks kept, and links made clickable, either
-   * written as a bare address (https://… or www.…) or as [texto](https://…).
+   * written as a bare address (https://… or www.…), as [texto](https://…) or as an email address.
    */
   static String noticeHtml(String text) {
     StringBuilder out = new StringBuilder("<html><body style='margin:2px'>");
@@ -153,6 +154,9 @@ final class Updater {
       if (m.group(1) != null) {
         label = m.group(1);
         url = m.group(2);
+      } else if (m.group(4) != null) {
+        label = m.group(4);
+        url = "mailto:" + m.group(4);
       } else {
         url = m.group(3);
         // A sentence's closing punctuation is not part of the address.

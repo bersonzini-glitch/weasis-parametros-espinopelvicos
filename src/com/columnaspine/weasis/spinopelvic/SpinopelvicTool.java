@@ -357,7 +357,9 @@ public class SpinopelvicTool extends PluginTool {
 
   private void browse(String url) {
     try {
-      java.awt.Desktop.getDesktop().browse(new java.net.URI(url));
+      java.net.URI uri = new java.net.URI(url);
+      if ("mailto".equals(uri.getScheme())) java.awt.Desktop.getDesktop().mail(uri);
+      else java.awt.Desktop.getDesktop().browse(uri);
     } catch (Exception ex) {
       JOptionPane.showMessageDialog(this, "No pude abrir el navegador. La dirección es " + url);
     }
