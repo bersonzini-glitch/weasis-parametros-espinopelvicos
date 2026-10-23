@@ -37,6 +37,16 @@ Convenciones: LL y TK positivos significan lordosis y cifosis. SVA y PT positivo
 
 ### Instalación en Mac
 
+**Con Homebrew** (lo más simple si ya lo usás; pide la contraseña de la Mac):
+
+```bash
+brew install --cask bersonzini-glitch/sagitalapp/sagitalapp-weasis
+```
+
+Después cerrá Weasis y volvé a abrirlo. Para actualizar: `brew upgrade --cask sagitalapp-weasis`.
+
+**Con el instalador:**
+
 1. Cerrá Weasis.
 2. Descargá **`Instalar-SagitalApp-Weasis-Mac.pkg`** desde [Releases](../../releases/latest) y hacé doble clic.
 3. Como el instalador no está notarizado por Apple, la Mac puede decir que no puede verificarlo: tocá **OK**, andá a **Ajustes del Sistema → Privacidad y seguridad**, bajá hasta el final y tocá **"Abrir igualmente"**.
@@ -109,6 +119,7 @@ PI, PT, SS, LL (L1–S1), PI−LL, TK (T4 or T5 to T12), T1PA and SVA, with the 
 
 ### Install
 
+- **Mac with [Homebrew](https://brew.sh):** `brew install --cask bersonzini-glitch/sagitalapp/sagitalapp-weasis`, then reopen Weasis.
 - **Mac:** quit Weasis, run **`Instalar-SagitalApp-Weasis-Mac.pkg`** from [Releases](../../releases/latest). If macOS says it can't verify the installer, allow it in **System Settings → Privacy & Security → Open Anyway**. Then open Weasis.
 - **Windows:** quit Weasis, extract **`SagitalApp-Weasis-Windows.zip`**, double-click **`instalar.bat`** (no admin rights needed; if SmartScreen appears, choose **More info → Run anyway**). Then open Weasis.
 
