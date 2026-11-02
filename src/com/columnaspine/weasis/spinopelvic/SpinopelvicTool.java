@@ -623,19 +623,34 @@ public class SpinopelvicTool extends PluginTool {
     return v == null ? "     —" : String.format("%6.1f°", v);
   }
 
+  /** "⚠" when a value is outside its normal range, so the narrow panel keeps one column of values. */
+  private static String flag(Double v, double lo, double hi) {
+    return v != null && (v < lo || v > hi) ? " ⚠" : "";
+  }
+
   private void showResults(Geometry.Result r, Geometry.Input in) {
-    StringBuilder b = new StringBuilder();
-    b.append("PI    Incidencia pélvica ").append(deg(r.pi)).append('\n');
-    b.append("PT    Tilt pélvico       ").append(deg(r.pt)).append('\n');
-    b.append("SS    Slope sacro        ").append(deg(r.ss)).append('\n');
     // Shown negative for lordosis, the usual convention in spinal deformity; PI−LL uses its magnitude.
-    b.append("LL    Lordosis L1–S1     ").append(deg(r.ll == null || r.ll == 0 ? r.ll : -r.ll)).append('\n');
-    b.append("PI−LL Mismatch           ").append(deg(r.pill)).append('\n');
-    b.append("TK    Cifosis ").append(tkLevel).append("–T12    ").append(deg(r.tk)).append('\n');
-    b.append("T1PA  T1 pelvic angle    ").append(deg(r.t1pa)).append('\n');
+    Double ll = r.ll == null || r.ll == 0 ? r.ll : -r.ll;
+    Double svaMm = r.svaInMm ? r.sva : null;
+    double inf = Double.POSITIVE_INFINITY;
+    StringBuilder b = new StringBuilder();
+    b.append("PI    Incidencia pélvica ").append(deg(r.pi)).append(flag(r.pi, 40, 65)).append('\n');
+    b.append("PT    Tilt pélvico       ").append(deg(r.pt)).append(flag(r.pt, 10, 25)).append('\n');
+    b.append("SS    Slope sacro        ").append(deg(r.ss)).append(flag(r.ss, 30, 50)).append('\n');
+    b.append("LL    Lordosis L1–S1     ").append(deg(ll)).append(flag(ll, -60, -40)).append('\n');
+    b.append("PI−LL Mismatch           ").append(deg(r.pill)).append(flag(r.pill, -inf, 10)).append('\n');
+    b.append("TK    Cifosis ").append(tkLevel).append("–T12    ").append(deg(r.tk)).append(flag(r.tk, 20, 40)).append('\n');
+    b.append("T1PA  T1 pelvic angle    ").append(deg(r.t1pa)).append(flag(r.t1pa, -inf, 20)).append('\n');
     b.append("SVA   C7 – S1 posterior  ")
         .append(r.sva == null ? "     —" : String.format(r.svaInMm ? "%+6.1f mm" : "%+6.0f px", r.sva))
+        .append(flag(svaMm, -25, 25))
         .append('\n');
+    // Ranges from AOSpine N2.M6.T3 (Valacco); PI−LL SRS-Schwab; T1PA Protopsaltis 2014.
+    b.append("\nNormales (⚠ = fuera de rango)\n")
+        .append("  PI 40–65 · PT 10–25 · SS 30–50\n")
+        .append("  LL −60 a −40 · PI−LL <10\n")
+        .append("  TK 20–40 (T5–T12) · T1PA <20\n")
+        .append("  SVA ±25 mm\n");
     String mPill = Geometry.schwabPill(r), mPt = Geometry.schwabPt(r), mSva = Geometry.schwabSva(r);
     if (mPill != null || mPt != null || mSva != null) {
       b.append("\nModificadores SRS-Schwab\n");
