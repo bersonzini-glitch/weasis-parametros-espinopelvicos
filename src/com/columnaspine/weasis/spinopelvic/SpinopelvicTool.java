@@ -628,7 +628,8 @@ public class SpinopelvicTool extends PluginTool {
     b.append("PI    Incidencia pélvica ").append(deg(r.pi)).append('\n');
     b.append("PT    Tilt pélvico       ").append(deg(r.pt)).append('\n');
     b.append("SS    Slope sacro        ").append(deg(r.ss)).append('\n');
-    b.append("LL    Lordosis L1–S1     ").append(deg(r.ll)).append('\n');
+    // Shown negative for lordosis, the usual convention in spinal deformity; PI−LL uses its magnitude.
+    b.append("LL    Lordosis L1–S1     ").append(deg(r.ll == null || r.ll == 0 ? r.ll : -r.ll)).append('\n');
     b.append("PI−LL Mismatch           ").append(deg(r.pill)).append('\n');
     b.append("TK    Cifosis ").append(tkLevel).append("–T12    ").append(deg(r.tk)).append('\n');
     b.append("T1PA  T1 pelvic angle    ").append(deg(r.t1pa)).append('\n');
@@ -642,7 +643,7 @@ public class SpinopelvicTool extends PluginTool {
       if (mPt != null) b.append(String.format("  PT    %-3s (0 <20° · + 20–30° · ++ >30°)%n", mPt));
       if (mSva != null) b.append(String.format("  SVA   %-3s (0 <4 cm · + 4–9,5 cm · ++ >9,5 cm)%n", mSva));
     }
-    b.append("\nLL y TK positivos = lordosis y cifosis.\nSVA y PT positivos = hacia anterior.");
+    b.append("\nLL negativa = lordosis. TK positiva = cifosis.\nSVA y PT positivos = hacia anterior.");
     report = b.toString();
     results.setText(report);
     results.setCaretPosition(0);

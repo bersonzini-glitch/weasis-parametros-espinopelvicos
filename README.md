@@ -29,7 +29,7 @@ Plugin for **Weasis 4.7** (Mac and Windows) that measures sagittal spinopelvic a
 
 También muestra los **modificadores SRS-Schwab** de PI−LL, PT y SVA (0 / + / ++).
 
-Convenciones: LL y TK positivos significan lordosis y cifosis. SVA y PT positivos significan hacia anterior. El paciente puede mirar a la izquierda o a la derecha, y las líneas se pueden dibujar en cualquier sentido.
+Convenciones: la lordosis (LL) se muestra negativa y la cifosis (TK) positiva; el PI−LL usa el valor absoluto de la lordosis. SVA y PT positivos significan hacia anterior. El paciente puede mirar a la izquierda o a la derecha, y las líneas se pueden dibujar en cualquier sentido.
 
 ### Requisitos
 
