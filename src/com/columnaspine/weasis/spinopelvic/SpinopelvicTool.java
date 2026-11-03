@@ -36,6 +36,7 @@ import javax.swing.Timer;
 import org.weasis.core.api.gui.util.ActionW;
 import org.weasis.core.api.image.util.Unit;
 import org.weasis.core.api.media.data.ImageElement;
+import bibliothek.gui.dock.common.mode.ExtendedMode;
 import org.weasis.core.ui.docking.PluginTool;
 import org.weasis.core.ui.editor.image.ViewCanvas;
 import org.weasis.core.ui.model.AbstractGraphicModel;
@@ -139,7 +140,9 @@ public class SpinopelvicTool extends PluginTool {
   private final java.util.function.Supplier<ImageViewerEventManager<?>> events;
 
   public SpinopelvicTool(Type type, java.util.function.Supplier<ImageViewerEventManager<?>> events) {
-    super(NAME, type, 130);
+    // Docked open rather than Weasis' default for tools (minimized to the edge, which folds away as
+    // soon as the image is clicked), so the next step stays in view while marking.
+    super(NAME, POSITION.EAST, ExtendedMode.NORMALIZED, type, 130);
     this.events = events;
     var icon = SpinopelvicTool.class.getResource("/icon/pelvis-16.png");
     if (icon != null) {
@@ -519,7 +522,11 @@ public class SpinopelvicTool extends PluginTool {
     boolean showing = isShowing();
     boolean opened = showing && !wasShowing;
     wasShowing = showing;
-    if (opened) refreshNotice();
+    if (opened) {
+      refreshNotice();
+      // A layout saved by an earlier version keeps it minimized: dock it open when it is used.
+      if (dockable.getExtendedMode() == ExtendedMode.MINIMIZED) dockable.setExtendedMode(ExtendedMode.NORMALIZED);
+    }
     if (showing) s.engaged = true;
     boolean justAssigned = System.currentTimeMillis() < rearmUntil && !activeToolMatches();
     if (s.engaged && s.active >= 0 && (opened || justAssigned)) {
