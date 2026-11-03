@@ -630,7 +630,8 @@ public class SpinopelvicTool extends PluginTool {
 
   private void showResults(Geometry.Result r, Geometry.Input in) {
     // Shown negative for lordosis, the usual convention in spinal deformity; PI−LL uses its magnitude.
-    Double ll = r.ll == null || r.ll == 0 ? r.ll : -r.ll;
+    // (Not a one-line ?: — mixing Double and double there unboxes a null LL and throws.)
+    Double ll = r.ll == null ? null : Double.valueOf(r.ll == 0 ? 0 : -r.ll);
     Double svaMm = r.svaInMm ? r.sva : null;
     double inf = Double.POSITIVE_INFINITY;
     StringBuilder b = new StringBuilder();
